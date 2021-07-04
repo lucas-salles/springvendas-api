@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/pedidos")
+@RequestMapping("/vendas/api/pedidos")
 public class PedidoController {
     @Autowired
     private PedidoService pedidoService;
