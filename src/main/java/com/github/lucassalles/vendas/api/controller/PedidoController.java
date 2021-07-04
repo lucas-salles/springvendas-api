@@ -8,6 +8,10 @@ import com.github.lucassalles.vendas.domain.entity.ItemPedido;
 import com.github.lucassalles.vendas.domain.entity.Pedido;
 import com.github.lucassalles.vendas.domain.enums.StatusPedido;
 import com.github.lucassalles.vendas.domain.service.PedidoService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -29,12 +33,24 @@ public class PedidoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Salva um novo pedido")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Pedido salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro de validação"),
+            @ApiResponse(code = 403, message = "Não autorizado")
+    })
     public Integer create(@RequestBody @Valid PedidoDTO dto) {
         return pedidoService.save(dto).getId();
     }
 
     @GetMapping("/{id}")
-    public InformacoesPedidoDTO getById(@PathVariable("id") Integer id) {
+    @ApiOperation("Obter detalhes de um pedido")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Pedido encontrado"),
+            @ApiResponse(code = 404, message = "Pedido não encontrado para o ID informado"),
+            @ApiResponse(code = 403, message = "Não autorizado")
+    })
+    public InformacoesPedidoDTO getById(@PathVariable("id") @ApiParam("Id do pedido") Integer id) {
         return pedidoService
                 .obterPedidoCompleto(id)
                 .map(pedido -> converter(pedido))
@@ -43,7 +59,14 @@ public class PedidoController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateStatus(@PathVariable("id") Integer id, @RequestBody AtualizacaoStatusPedidoDTO dto) {
+    @ApiOperation("Atualiza o status de um pedido")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Status do pedido atualizado com sucesso"),
+            @ApiResponse(code = 404, message = "Pedido não encontrado para o ID informado"),
+            @ApiResponse(code = 403, message = "Não autorizado")
+    })
+    public void updateStatus(@PathVariable("id") @ApiParam("Id do pedido") Integer id,
+                             @RequestBody AtualizacaoStatusPedidoDTO dto) {
         String novoStatus = dto.getNovoStatus();
         pedidoService.atualizaStatus(id, StatusPedido.valueOf(novoStatus));
     }
